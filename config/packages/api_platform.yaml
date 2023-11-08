@@ -1,0 +1,45 @@
+parameters:
+  # ... 'http://localhost:9200'
+  env(ELASTICSEARCH_HOST): "http://localhost:8000"
+
+api_platform:
+  title: API Platform
+  version: 1.0.0
+
+  mapping:
+    paths: ["%kernel.project_dir%/src/Entity"]
+  patch_formats:
+    json: ["application/merge-patch+json"]
+  formats:
+    jsonld: ["application/ld+json"]
+  docs_formats:
+    jsonld: ["application/ld+json"]
+    jsonopenapi: ["application/vnd.openapi+json"]
+    html: ["text/html"]
+
+  swagger:
+    versions: [3]
+
+  elasticsearch:
+    hosts: ["%env(ELASTICSEARCH_HOST)%"]
+
+  collection:
+    pagination:
+      enabled: true
+      page_parameter_name: page
+      # enabled_parameter_name: pagination
+      # items_per_page: 30
+      # maximum_items_per_page: 100
+      items_per_page_parameter_name: itemsPerPage # Default value
+      # partial_parameter_name: partial
+
+  defaults:
+    stateless: true
+    cache_headers:
+      vary: ["Content-Type", "Authorization", "Origin"]
+    extra_properties:
+      standard_put: true
+      rfc_7807_compliant_errors: true
+    pagination_enabled: true
+  event_listeners_backward_compatibility_layer: false
+  keep_legacy_inflector: false

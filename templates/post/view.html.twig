@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 1100px;
+			width: 100%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.table {
+			text-align: left;
+		}
+		.header {
+			padding: 1rem;
+			margin-bottom: 1rem;
+		}
+		.btn {
+			border: none;
+			color: white;
+			padding: 10px 25px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 18px;
+			margin: 2px 2px 2px 5px;
+			cursor: pointer;
+		}
+		.btn4 {
+			background-color: black;
+			margin-bottom: 1rem;
+			margin-top: 1rem;
+		}
+	</style>
+
+	<div class="example-wrapper">
+	<h1 style="margin-top: 2rem" >Current Posts is Here :</h1>
+
+    <div class="card border-success mb-3" style="max-width: 20rem;">
+        <div class="card-header bg-transparent border-success">{{ post.title }} </div>
+        <div class="card-body text-success">
+            <p class="card-text"> {{ post.description }}</p>
+        </div>
+
+        <div class="card-footer bg-transparent border-success"> 
+            <a href="{{ absolute_url(asset('')) }}edit/{{post.id}}" class="btn btn4 ">Edit</a>
+			<a href="{{ absolute_url(asset('')) }}delete/{{post.id}}" class="btn btn4 ">Delete</a>
+			<a href="{{absolute_url(asset(''))}}admin/dashboard/allPosts" class="btn btn4 ">Back</a>
+
+            <a href="#" class="card-link comment-toggle" data-post-id="{{ post.id }}">Comment</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %} 

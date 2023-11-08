@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Admin Panel
+{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { 
+        margin: 1em auto; 
+        max-width: 1100px; 
+        width: 95%; 
+        font: 18px/1.5 sans-serif; 
+
+        display: grid;
+        grid-template-columns: auto auto auto;
+        column-gap: 5px;
+        row-gap: 20px;
+    }
+    .example-wrapper code { 
+        background: #F5F5F5; 
+        padding: 2px 6px; 
+    }
+    .btn {
+	    border: none;
+		color: white;
+		padding: 8px 15px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 15px;
+		margin: 2px 2px 2px 5px;
+		cursor: pointer;
+	}
+	.btn1 {
+		background-color: #008CBA; /* Blue */
+	}
+	.btn2 {
+		background-color: #4CAF50; /* Green */
+	}
+	.btn3 {
+		background-color: #f44336; /* Red */
+	}
+	.btn4 {
+		background-color: black;
+		margin-bottom: 1rem;
+	}
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Admin </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+
+            {% if is_granted('ROLE_ADMIN')  %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ path('admin_dashboard') }}"> Dashboard <span class="sr-only">(current)</span></a>
+            </li>
+            {% endif %}
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('all_posts') }}"> All Posts </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('create_route') }}"> New Post </a>
+                {# <a href="{{absolute_url(asset(''))}}create" class="btn btn4 ">Create Post</a> #}
+            </li>
+
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/{{app.user ? 'logout' : 'login'}}"> {{app.user ? 'Logout': 'Login'}}</a>
+            </li>
+            {# <li class="nav-item">
+                <a class="nav-link" href="../registration/register.html.twig">Register</a>
+            </li> #}
+        </ul>
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0 " style="background-color: black;" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+
+<h1 style="text-align: center" >Admin Dashboard</h1>
+<h1 style="margin-left: 8rem" >All Posts Are Here :</h1>
+
+<div class="example-wrapper">
+
+    {% for post in posts %}
+
+    <div class="card border-success mb-3" style="max-width: 20rem;">
+        <div class="card-header bg-transparent border-success">{{ post.title }} </div>
+
+        <div class="card-body text-success">
+            {# <h5 class="card-title">Success card title</h5> #}
+            <p class="card-text"> {{ post.description }}</p>
+        </div>
+
+        <div class="card-footer bg-transparent border-success"> 
+
+        	<a href="{{ absolute_url(asset('')) }}view/{{post.id}}" class="btn btn1 ">View</a>
+            <a href="{{ absolute_url(asset('')) }}edit/{{post.id}}" class="btn btn2 ">Edit</a>
+			<a href="{{ absolute_url(asset('')) }}delete/{{post.id}}" class="btn btn3 ">Delete</a>
+
+            <a href="#" class="card-link comment-toggle" data-post-id="{{ post.id }}">Comment</a>
+            {# <a href="#" class="card-link comment-toggle" data-post-id="{{ post.id }}">Comment</a> #}
+
+                {# <div class="comment-form" style="display: none;" data-post-id="{{ post.id }}"> #}
+                {# <form method="post" action="{{ path('add_comment', {'id': post.id}) }}"> #}
+    {# {% endfor %} #}
+                    {# {{ form_errors(commentForm) }} #}
+                    {# {{ form_start(commentForm) }}                     #}
+                        {# {{ form_row(commentForm.text) }} #}
+                        {# {% set commentText = form_row(commentForm.text) %} #}
+                        {# {{ commentText }} #}
+                        {# {{ form_widget(commentForm.submit) }} #}
+                        {# {{ form_row(commentForm.submit) }} #}
+                        {# <button type="submit" class="btn btn-primary"> Register </button> #}
+
+                    {# {{ form_end(commentForm) }} #}
+                {# </form> #}
+            {# </div> #}
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+
+
+{# Access Control in Templates #}
+{# {% if is_granted('ROLE_ADMIN') %} #}
+    {# <a href="...">Delete</a> #}
+{# {% endif %} #}
