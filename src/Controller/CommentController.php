@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Post;
+use App\Entity\User;
 use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,14 +27,16 @@ class CommentController extends AbstractController
     public function addComment(Request $request, $id): Response
     {
         $post = $this->em->getRepository(Post::class)->find($id);
+        $user = $this->getUser(); // Get the current user
+
         $comment = new Comment();
+        $comment->setPost($post);
+        $comment->setCommentUser($user); // Set the user for the comment
 
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $comment->setPost($post);
-            // Set other fields like user, created_at if needed
 
             $entityManager = $this->em->getManager();
             $entityManager->persist($comment);
@@ -42,10 +45,12 @@ class CommentController extends AbstractController
             $this->addFlash('success', 'Comment added successfully');
         }
 
-        // return $this->render('app/index.html.twig', [
-        //     'commentForm' => $form->createView(),
-        // ]);
+        return $this->render('comment/index.html.twig', [
+            'post' => $post,
+            'comments' => $post->getComments(),
+            'form' => $form->createView(),
+        ]);
 
-        return $this->redirectToRoute('all_posts');
+        // return $this->redirectToRoute('all_posts');
     }
 }

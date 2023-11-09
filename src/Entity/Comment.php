@@ -20,18 +20,19 @@ class Comment
     private ?string $text = null;
 
     #[ORM\Column]
-    private ?int $commentUser = null;
+    private ?User $commentUser;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTime $created_at = null;
+
 
 
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Post', inversedBy: 'comments')]
-    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
-    private ?Post $Post = null;
+    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id', nullable: false)]
+    private ?Post $post;
 
 
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -54,33 +55,35 @@ class Comment
         return $this->commentUser;
     }
 
-    public function setCommentUser(int $commentUser): static
+    public function setCommentUser(User $commentUser): static
     {
         $this->commentUser = $commentUser;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(?\DateTimeImmutable $created_at): static
+    public function setCreatedAt(?\DateTime $created_at): static
     {
         $this->created_at = $created_at;
 
         return $this;
     }
 
+
+
     public function getPost(): ?Post
     {
-        return $this->Post;
+        return $this->post;
     }
 
-    public function setPost(?Post $Post): static
+    public function setPost(?Post $posts): static
     {
-        $this->Post = $Post;
+        $this->post = $posts;
 
         return $this;
     }

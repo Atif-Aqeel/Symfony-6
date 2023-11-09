@@ -5,10 +5,12 @@ namespace App\Entity;
 use App\Entity\User;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\ApiFilter;
+// use ApiPlatform\Core\Annotation\ApiFilter;
 use App\Repository\PostsRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Doctrine\Odm\Filter\SearchFilter;
+// use ApiPlatform\Doctrine\Odm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Put;
@@ -17,7 +19,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post as MetadataPost;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use Elastic\Elasticsearch\ClientBuilder;
 use function PHPSTORM_META\type;
 
 // by using this, it displays on Api Platform as Swagger UI
@@ -45,13 +47,24 @@ use function PHPSTORM_META\type;
             // new Get(uriTemplate: '/api/{id}', controller: GetWeather::class),
         ],
         paginationEnabled: true,
-        paginationItemsPerPage: 5
-    )
+        paginationItemsPerPage: 5,
+    ),
+
+    ApiFilter(
+        SearchFilter::class,
+        properties: [
+            'name' => SearchFilter::STRATEGY_PARTIAL,
+            'title' => SearchFilter::STRATEGY_PARTIAL,
+            'description' => SearchFilter::STRATEGY_PARTIAL,
+            'id' => SearchFilter::STRATEGY_EXACT,
+        ]
+    ),
 
 ]
 
 // it shows this is a doctrine entity
 #[ORM\Entity(repositoryClass: PostsRepository::class)]
+
 class Post
 {
     // this is the primary key
@@ -95,7 +108,8 @@ class Post
     private ?User $owner = null;
 
 
-    #[ORM\OneToMany(mappedBy: 'Post', targetEntity: Comment::class)]
+
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'Post')]
     private Collection $comments;
 
     public function __construct()
@@ -112,12 +126,12 @@ class Post
         return $this->id;
     }
 
-    // public function setId(int $id): static
-    // {
-    //     $this->id = $id;
+    public function setId(int $id): static
+    {
+        $this->id = $id;
 
-    //     return $this;
-    // }
+        return $this;
+    }
 
     public function getTitle(): ?string
     {
@@ -177,6 +191,7 @@ class Post
         return $this;
     }
 
+
     /**
      * @return Collection<int, Comment>
      */
@@ -206,4 +221,21 @@ class Post
 
         return $this;
     }
+
+    // ElasticSearch Integration
+
+    // public function searchTexts() #: array
+    // {
+    //     $client = ClientBuilder::create()
+    //         ->setHosts(['http://localhost:9200'])
+    //         ->build();
+
+    //     $result = $client->info();
+    //     var_dump($result);
+
+    //     return [
+    //         'title',
+    //         'content'
+    //     ];
+    // }
 }

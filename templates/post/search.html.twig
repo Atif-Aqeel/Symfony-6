@@ -22,6 +22,26 @@
         background: #F5F5F5; 
         padding: 2px 6px; 
     }
+    		.btn {
+			border: none;
+			color: white;
+			padding: 10px 25px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 18px;
+			margin: 2px 2px 2px 5px;
+			cursor: pointer;
+		}
+		.btn4 {
+			background-color: black;
+			margin-bottom: 1rem;
+			margin-top: 1rem;
+		}
+        .mr{
+            margin-left: 47rem;
+            margin-right: 2rem;
+        }
 </style>
 
 
@@ -67,61 +87,39 @@
         </ul>
         </form>
 
-        <form class="form-inline my-2 my-lg-0" action="{{ path('search_route') }}"  >
+        <form class="form-inline my-2 my-lg-0"  action="{{ path('search_route') }}" >
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" >
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="background : black" >Search</button>
         </form>
 
     </div>
 </nav>
 
-<h1 style="text-align: center" > Home Page  </h1>
-<h1 style="margin-left: 8rem" >All Posts Are Here :</h1>
+<h1 style="text-align: center" > 
+    Home Page  
+    <a href="{{absolute_url(asset(''))}}admin/dashboard/allPosts" class="mr btn btn4"  >Back</a>
+</h1>
+
+<h1 style="margin-left: 8rem" >Search Posts Are Here :</h1>
 
 <div class="example-wrapper">
+
     {% for post in posts %}
 
     <div class="card border-success mb-3" style="max-width: 20rem;">
         <div class="card-header bg-transparent border-success">{{ post.title }} </div>
         <div class="card-body text-success">
-            {# <h5 class="card-title">Success card title</h5> #}
             <p class="card-text"> {{ post.description }}</p>
         </div>
 
         <div class="card-footer bg-transparent border-success"> 
             <a href="#" class="card-link comment-toggle" data-post-id="{{ post.id }}">Comment</a>
-            {# <div class="comment-form" style="display: none;" data-post-id="{{ post.id }}"> #}
-                {# <form method="post" action="{{ path('add_comment', {'id': post.id}) }}"> #}
-    {# {% endfor %} #}
-                    {# {{ form_errors(commentForm) }} #}
-                    {# {{ form_start(commentForm) }}                     #}
-                        {# {{ form_row(commentForm.text) }} #}
-                        {# {% set commentText = form_row(commentForm.text) %} #}
-                        {# {{ commentText }} #}
-                        {# {{ form_widget(commentForm.submit) }} #}
-                        {# {{ form_row(commentForm.submit) }} #}
-                        {# <button type="submit" class="btn btn-primary"> Register </button> #}
-
-                    {# {{ form_end(commentForm) }} #}
-                {# </form> #}
-            {# </div> #}
         </div>
 
     </div>
     {% endfor %}
 
 </div>
-
-
-<script>
-$(document).ready(function() {
-    $('.comment-toggle').click(function(e) {
-        e.preventDefault();
-        const postId = $(this).data('post-id');
-        $('.comment-form[data-post-id="' + postId + '"]').toggle();
-    });
-});
-</script>
 
 
 {% endblock %}

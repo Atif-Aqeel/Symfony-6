@@ -2,38 +2,31 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Post;
+use App\Entity\User;
+use App\Entity\Comment;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Post;
+use Faker\Factory;
 
 class PostsFixtures extends Fixture
 {
+    // Load Posts
     public function load(ObjectManager $manager): void
     {
 
-        for ($i = 0; $i < 15; ++$i) {
+        for ($i = 0; $i < 15; $i++) {
             $post = new Post();
+            // $post->setTitle($this->faker->sentence());
             $post->setTitle('Post ' . $i);
             $post->setDescription('Description ' . $i);
+
+            $user = $this->getReference("user");
+            $post->setOwner($user);
+
             $manager->persist($post);
         }
 
         $manager->flush();
-
-
-        // $post = new Posts();
-        // $post->setTitle('Christian Bale');
-        // $post->setDescription('Description here');
-        // $manager->persist($post);
-
-        // $post2 = new Posts();
-        // $post2->setTitle('Heath Ledger');
-        // $post2->setDescription('Description here');
-        // $manager->persist($post2);
-
-        // $manager->flush();
-
-        // $this->addReference('actor', $post);
-        // $this->addReference('actor2', $post2);
     }
 }

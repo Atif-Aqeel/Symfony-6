@@ -213,5 +213,73 @@ class PostsController extends AbstractController
     }
 
 
-    // 
+    // SearchAction
+    #[Route('/posts/search', name: 'search_route')]
+    public function searchAction(Request $request): Response
+    {
+        $search = $request->query->get('search');
+
+        $repository = $this->em->getRepository(Post::class);
+
+        $posts = $repository->createQueryBuilder('p')
+
+            // For Partial Match
+            ->where('p.title LIKE :search')
+            ->orWhere('p.description LIKE :search')
+            ->setParameter('search', '%' . $search . '%')
+
+            // For Exact Match
+            // ->where('p.title = :search')
+            // ->orWhere('p.description = :search')
+            // ->setParameter('search', $search)
+
+            // For just title
+            // ->where('p.title = :search')
+            // ->setParameter('search', $search)
+
+            // Show the related posts that contain only related keyword
+            // ->andWhere('p.title LIKE :search')
+            // ->orWhere('p.description LIKE :search')
+            // ->setParameter('search', $search)
+
+            ->getQuery()
+            ->getResult();
+
+        if (!$posts) {
+            // $this->addFlash('message', 'No Posts Found');
+            // return $this->redirectToRoute('all_posts');
+            return $this->render('post/noSearch.html.twig', [
+                'posts' => $posts,
+            ]);
+        }
+
+        return $this->render('post/search.html.twig', [
+            'posts' => $posts,
+        ]);
+    }
+
+
+    // /**
+    //  * @param Request $request
+    //  * @return Response
+    //  */
+    // #[Route('/comment', name: 'comment')]
+    // public function commentAction(Request $request): Response
+    // {
+    //     $comment = new Comment();
+    //     $form = $this->createForm(CommentType::class, $comment);
+    //     $form->handleRequest($request);
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $entityManager = $this->getDoctrine()->getManager();
+    //         $entityManager->persist($comment);
+    //         $entityManager->flush();
+    //         return $this->redirectToRoute('blog_index');
+    //     }
+    //     return $this->render('comment/index.html.twig', [
+    //         'comment' => $comment,
+    //         'form' => $form->createView(),
+    //     ]);
+    // }
+    //
+
 }
