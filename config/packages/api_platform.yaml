@@ -2,6 +2,9 @@ parameters:
   # ... 'http://localhost:9200'
   env(ELASTICSEARCH_HOST): "http://localhost:8000"
 
+  fos_elastica.host: localhost #Host for elasticsearch
+  fos_elastica.port: 9200 #Port where elasticsearch runs
+
 api_platform:
   title: API Platform
   version: 1.0.0
@@ -20,8 +23,8 @@ api_platform:
   swagger:
     versions: [3]
 
-  elasticsearch:
-    hosts: ["%env(ELASTICSEARCH_HOST)%"]
+  # elasticsearch:
+  # hosts: ["%env(ELASTICSEARCH_HOST)%"]
 
   collection:
     pagination:

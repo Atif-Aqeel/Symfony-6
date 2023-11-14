@@ -56,6 +56,66 @@ class PostsController extends AbstractController
     }
 
 
+    // Search Action
+    // get post by id
+    #[Route('/posts/{id}', name: 'post')]
+    public function showPostAction($id): Response
+    {
+        //Get data from DB using repository
+        $repository = $this->em->getRepository(Post::class);
+
+        // Assuming 'id' is the name of the field you want to search by
+        $post = $repository->findOneBy(['id' => $id]);
+        // dd($post);
+
+        return $this->render('post/search.html.twig', [
+            'posts' => $post ? [$post] : [], // Wrap $post in an array for consistent handling in the template
+        ]);
+    }
+
+
+
+    // // Assuming you have a 'title' field in your Post entity
+    // #[Route('/posts/title', name: 'post_by_title')]
+    // public function showPostByTitleAction($title): Response
+    // {
+    //     // Get data from DB using repository
+    //     $repository = $this->em->getRepository(Post::class);
+
+    //     // Assuming 'title' is the name of the field you want to search by
+    //     $post = $repository->findOneBy(['title' => $title]);
+
+    //     return $this->render('post/search.html.twig', [
+    //         'posts' => $post ? [$post] : [], // Wrap $post in an array for consistent handling in the template
+    //     ]);
+    // }
+
+
+    #[Route('/posts/search/{keyword}', name: 'search_posts')]
+    public function searchPostsAction($keyword): Response
+    {
+        // Get data from DB using repository
+        $repository = $this->em->getRepository(Post::class);
+
+        // Assuming 'title' and 'content' are fields you want to search
+        $posts = $repository->createQueryBuilder('p')
+            ->where('p.title LIKE :keyword OR p.description LIKE :keyword')
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('post/search.html.twig', [
+            'posts' => $posts,
+        ]);
+    }
+
+
+
+
+
+
+
+
     // Set Route (All Posts Action)
     #[Route('/admin/dashboard/allPosts', name: 'admin_board')]
     public function adminPosts(): Response
@@ -210,52 +270,6 @@ class PostsController extends AbstractController
         $em->flush();
 
         return $this->redirectToRoute('admin_board');
-    }
-
-
-    // SearchAction
-    #[Route('/posts/search', name: 'search_route')]
-    public function searchAction(Request $request): Response
-    {
-        $search = $request->query->get('search');
-
-        $repository = $this->em->getRepository(Post::class);
-
-        $posts = $repository->createQueryBuilder('p')
-
-            // For Partial Match
-            ->where('p.title LIKE :search')
-            ->orWhere('p.description LIKE :search')
-            ->setParameter('search', '%' . $search . '%')
-
-            // For Exact Match
-            // ->where('p.title = :search')
-            // ->orWhere('p.description = :search')
-            // ->setParameter('search', $search)
-
-            // For just title
-            // ->where('p.title = :search')
-            // ->setParameter('search', $search)
-
-            // Show the related posts that contain only related keyword
-            // ->andWhere('p.title LIKE :search')
-            // ->orWhere('p.description LIKE :search')
-            // ->setParameter('search', $search)
-
-            ->getQuery()
-            ->getResult();
-
-        if (!$posts) {
-            // $this->addFlash('message', 'No Posts Found');
-            // return $this->redirectToRoute('all_posts');
-            return $this->render('post/noSearch.html.twig', [
-                'posts' => $posts,
-            ]);
-        }
-
-        return $this->render('post/search.html.twig', [
-            'posts' => $posts,
-        ]);
     }
 
 

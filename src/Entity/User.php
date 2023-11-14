@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Post;
+use App\Entity\Comment;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
@@ -76,47 +77,67 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
     const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_USER = 'ROLE_USER';
+    const DEFAULT_ROLES = [self::ROLE_USER];
+
+
 
     // This is the Id of user
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private ?int $id = null;
+    private $id;
+    // private ?int $id = null;
 
     // This is the email of user
     #[ORM\Column(type: "string", length: 180, unique: true)]
-    private ?string $email = null;
+    // private ?string $email = null;
+    private $email;
 
     // This is the roles of user
-    #[ORM\Column(type: "json")]
-    private array $roles = [];
+    #[ORM\Column(type: "json", length: 200, nullable: true)]
+    // private array $roles = [];
+    private $roles;
 
     // This is the password of user
     /**
      * @var string The hashed password
      */
-    #[ORM\Column(type: "string")]
-    private ?string $password;
+    #[ORM\Column(type: "string", length: 255)]
+    // private ?string $password;
+    private $password;
 
 
-    // This is the posts of user
-    // This will show the relationship between User and Posts
-    /**
-     * @var Post[] Available Posts from this user
-     * 
-     */
+
+    // This is the posts of user // This will show the relationship between User and Posts
+    // /**
+    //  * @var Post[] Available Posts from this user
+    //  * 
+    //  */
     // #[ApiSubresource]
     #[ORM\OneToMany(
         targetEntity: Post::class,
         mappedBy: 'user',
-        // cascade: ["persist", "remove"]
     )]
-    private Collection $posts;
+    // private Collection $posts;
+    private $posts;
+
+
+    #[ORM\OneToMany(
+        targetEntity: Comment::class,
+        mappedBy: 'user'
+    )]
+    private $comments;
+
+
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        // $this->roles = self::DEFAULT_ROLES;
     }
+
 
 
     //Getters/Setters
@@ -125,13 +146,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): self
     {
         $this->email = $email;
 
@@ -149,6 +169,85 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+
+
+    //getter for Post
+    /**
+     * @return Collection|Post[]
+     */
+    public function getPost(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post): self
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts[] = $post;
+            $post->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removePost(Post $post): self
+    {
+        if ($this->posts->contains($post)) {
+            $this->posts->removeElement($post);
+            // set the owning side to null (unless already changed)
+            if ($post->getUser() === $this) {
+                $post->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComment(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getUser() === $this) {
+                $comment->setUser(null);
+            }
+            return $this;
+        }
+    }
+
+
 
     /**
      * @see UserInterface
@@ -162,39 +261,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): static
+    public function setRoles(array $roles)
     {
         $this->roles = $roles;
-
         return $this;
     }
-
-
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
 
     // isAdmin() method
     public function isAdmin(): bool
@@ -204,36 +275,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
 
-
-
-    //getter for Post
     /**
-     * @return Collection<int, Post>
+     * Returns the salt that was originally used to encode the password.
+     *
+     * This can return null if the password was not encoded using a salt.
+     *
+     * @return string|null The salt
      */
-    public function getPosts()
+    public function getSalt()
     {
-        return $this->posts;
+        return null;
     }
 
-    public function addPost(Post $p): self
+
+    /**
+     * Removes sensitive data from the user.
+     * This is important if, at any given point, sensitive information like
+     * the plain-text password is stored on this object.
+     * 
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
     {
-        if (!$this->posts->contain($p)) {
-            $this->posts[] = $p;
-            $p->setUser($this);
-        }
-        return $this;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
-    public function removePost(Post $p): self
-    {
-        if ($this->posts->removeElement($p)) {
-            // set the owning side to null (unless already changed)
-            if ($p->getUser() === $this) {
-                $p->setUser(null);
-            }
-            // $p->removeUser($this);
-        }
 
-        return $this;
-    }
+
+
+
+
+
+
+    // 
 }

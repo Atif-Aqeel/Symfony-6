@@ -1,0 +1,12 @@
+# config/packages/elasticsearch.yaml
+
+# elasticsearch:
+# hosts:
+# - "http://127.0.0.1:9200" # Adjust the host and port based on your Elasticsearch setup
+
+# The port 8000 is usually used for the Symfony development server.
+# If your Symfony application is running on a different port (for example, http://127.0.0.1:8000),
+# it does not affect the Elasticsearch configuration.
+# The Symfony application communicates with Elasticsearch using the specified Elasticsearch host and port,
+# which is http://127.0.0.1:9200 in this case.
+

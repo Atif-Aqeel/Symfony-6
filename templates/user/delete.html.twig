@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    User Deleted
+{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <h1>User Deleted</h1>
+        <p>User has been successfully deleted.</p>
+        <a href="{{ path('all_users') }}">Back to Users</a>
+    </div>
+{% endblock %}

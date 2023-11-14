@@ -11,6 +11,23 @@ services:
     autowire: true # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+  Elasticsearch\Client:
+    class: "%env(ELASTICSEARCH_URL)%"
+    # arguments:
+    # $hosts:
+    # - "http://localhost:9200"
+
+  App\Service\ElasticsearchService:
+    arguments:
+      $client: '@Elasticsearch\Client'
+      $index: "search"
+      $type: "post"
+
+  App\Controller\SearchController:
+    arguments:
+      $elasticsearchService: '@App\Service\ElasticsearchService'
+      # makes classes discoverable later
+
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
   App\:

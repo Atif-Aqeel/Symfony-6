@@ -2,35 +2,45 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Post;
+use App\Entity\User;
 use App\Repository\CommentRepository;
+use App\Repository\PostsRepository;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-#[ApiResource]
+// #[ApiResource]
 
 class Comment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: "integer")]
+    private $id;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $text = null;
+    #[ORM\Column(type: "string", length: 255)]
+    private $text;
 
-    #[ORM\Column]
-    private ?User $commentUser;
+    #[ORM\Column(type: "datetime")]
+    private $created_at;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTime $created_at = null;
 
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\User', inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: true)]
+    // #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    // private User $commentUser;
+    private $user;
 
 
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Post', inversedBy: 'comments')]
-    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id', nullable: false)]
-    private ?Post $post;
-
+    #[ORM\JoinColumn(nullable: false)]
+    // #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id', nullable: false)]
+    // private Post $posts;
+    private $post;
 
 
     public function getId(): ?int
@@ -38,36 +48,25 @@ class Comment
         return $this->id;
     }
 
+
     public function getText(): ?string
     {
         return $this->text;
     }
 
-    public function setText(?string $text): static
+    public function setText(?string $text): self
     {
         $this->text = $text;
 
         return $this;
     }
 
-    public function getCommentUser(): ?int
-    {
-        return $this->commentUser;
-    }
-
-    public function setCommentUser(User $commentUser): static
-    {
-        $this->commentUser = $commentUser;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(?\DateTime $created_at): static
+    public function setCreatedAt(?\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
 
@@ -75,16 +74,49 @@ class Comment
     }
 
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
 
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+
+    // /**
+    //  * @return Collection<int, Post>
+    //  */
     public function getPost(): ?Post
     {
         return $this->post;
     }
 
-    public function setPost(?Post $posts): static
+    public function setPost(?Post $post): self
     {
-        $this->post = $posts;
+        $this->post = $post;
 
         return $this;
     }
+
+
+    // public function addPost(Post $post): static
+    // {
+    //     if (!$this->posts->contains($post)) {
+    //         $this->posts->add($post);
+    //         $post->addComment($this);
+    //     }
+    //     return $this;
+    // }
+
+    // public function removePost(Post $post): static
+    // {
+    //     if ($this->posts->removeElement($post)) {
+    //         $post->removeComment($this);
+    //     }
+    //     return $this;
+    // }
 }

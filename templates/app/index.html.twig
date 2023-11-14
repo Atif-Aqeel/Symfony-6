@@ -40,12 +40,9 @@
             </li>
             {% endif %}
 
-            {# {% if is_granted('ROLE_ADMIN')  %}
             <li class="nav-item active">
                 <a class="nav-link" href="{{ path('admin_dashboard') }}"> Admin Panel </a>
             </li>
-            {% endif %} #}
-
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('user_posts') }}"> Your Posts </a>
@@ -76,39 +73,44 @@
 </nav>
 
 <h1 style="text-align: center" > Home Page  </h1>
-<h1 style="margin-left: 8rem" >All Posts Are Here :</h1>
+<h1 style="margin-left: 8rem" >All Posts :</h1>
 
 <div class="example-wrapper">
     {% for post in posts %}
 
     <div class="card border-success mb-3" style="max-width: 20rem;">
-        <div class="card-header bg-transparent border-success">{{ post.title }} </div>
+        <div class="card-header bg-transparent border-success"> <strong>Title : </strong> {{ post.title }} </div>
         <div class="card-body text-success">
-            {# <h5 class="card-title">Success card title</h5> #}
-            <p class="card-text"> {{ post.description }}</p>
+            <p class="card-text"> <strong>Content : </strong> {{ post.description }}</p>
         </div>
 
         <div class="card-footer bg-transparent border-success"> 
-            <a href="#" class="card-link comment-toggle" data-post-id="{{ post.id }}">Comment</a>
-            {# <div class="comment-form" style="display: none;" data-post-id="{{ post.id }}"> #}
-                {# <form method="post" action="{{ path('add_comment', {'id': post.id}) }}"> #}
-    {# {% endfor %} #}
-                    {# {{ form_errors(commentForm) }} #}
-                    {# {{ form_start(commentForm) }}                     #}
-                        {# {{ form_row(commentForm.text) }} #}
-                        {# {% set commentText = form_row(commentForm.text) %} #}
-                        {# {{ commentText }} #}
-                        {# {{ form_widget(commentForm.submit) }} #}
-                        {# {{ form_row(commentForm.submit) }} #}
-                        {# <button type="submit" class="btn btn-primary"> Register </button> #}
+            <a href="#" class="card-link comment-toggle" data-post-id="{{ post.id }}">Comments</a>
+            
+            <div class="comment-form" style="display: none;" data-post-id="{{ post.id }}">
+                <form method="post" action="{{ path('add_comment', {'id': post.id}) }}">
+                    <input class="form-control mr-sm-2" type="text" placeholder="Comment" aria-label="Comment" >                
+                    <button type="submit" class="btn btn-primary"> Save </button>
+                </form>
+            </div>
 
-                    {# {{ form_end(commentForm) }} #}
-                {# </form> #}
-            {# </div> #}
+            {# Twig templates for rendering posts - templates/post/index.html.twig #}
+            <!-- Display comments for the post -->
+            <div class="comments" data-post-id="{{ post.id }}">
+                {% for comment in post.comments %}
+                    <h6>{{ comment.text }}</h6>
+
+                    <small>from <strong>{{ comment.user.email }} </strong>- </small>
+                    <small>at   {{ comment.createdAt|date('Y-m-d H:i:s') }} </small>      
+                {% endfor %}
+
+                {# <a href="{{ path('comment_create', {'postId': post.id}) }}">Add Comment</a> #}
+            </div>
         </div>
 
     </div>
     {% endfor %}
+
 
 </div>
 
@@ -119,9 +121,14 @@ $(document).ready(function() {
         e.preventDefault();
         const postId = $(this).data('post-id');
         $('.comment-form[data-post-id="' + postId + '"]').toggle();
+//        $('.comments[data-post-id="' + postId + '"]').toggle();
     });
 });
 </script>
 
 
+
 {% endblock %}
+
+
+

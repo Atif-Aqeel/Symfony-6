@@ -9,13 +9,19 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ CommentController }} </h1>
 
     <div class="comments">
         {% for comment in post.comments %}
+            {# <h1>    {{ comment.post }}  </h1> #}
+
             <div class="comment">
-                <p>{{ comment.text }}</p>
+                <p>Comment ID:   {{ comment.id }}</p>        
+                <p>Comment Text: {{ comment.text }}</p>
+                {# <p>Created at :  {{ comment.created_at }}</p> #}
+
             </div>
+
+
         {% endfor %}
     </div>
 

@@ -1,7 +1,5 @@
 <?php
-
 // src/Controller/CommentController.php
-
 namespace App\Controller;
 
 use App\Entity\Comment;
@@ -23,34 +21,44 @@ class CommentController extends AbstractController
         $this->em = $em;
     }
 
-    #[Route('/add_comment/{id}', name: 'add_comment')]
-    public function addComment(Request $request, $id): Response
+
+    // 
+    #[Route('/posts/add_comment/{id}', name: 'add_comment')]
+    // #[Route('/comment/{postId}', name: 'comment_create')]
+
+    public function addComment(Request $request, $id)
     {
+        // $post = $this->getDoctrine()->getRepository(Post::class)->find($postId);
         $post = $this->em->getRepository(Post::class)->find($id);
         $user = $this->getUser(); // Get the current user
 
         $comment = new Comment();
         $comment->setPost($post);
-        $comment->setCommentUser($user); // Set the user for the comment
+        // $comment->setUser($user);
 
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $entityManager = $this->em->getManager();
+            // $entityManager = $this->getDoctrine()->getManager();
+            $entityManager = $this->em;
             $entityManager->persist($comment);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Comment added successfully');
+            return $this->redirectToRoute('app/index.html.twig');
         }
 
-        return $this->render('comment/index.html.twig', [
-            'post' => $post,
-            'comments' => $post->getComments(),
-            'form' => $form->createView(),
-        ]);
+        // return $this->render('app/index.html.twig', [
+        //     'posts' => $post,
+        //     'comments' => $post->getComments(),
+        //     'form' => $form->createView(),
+        // ]);
 
+        return $this->render('comment/create.html.twig', [
+            'form' => $form->createView()
+        ]);
         // return $this->redirectToRoute('all_posts');
+
     }
 }

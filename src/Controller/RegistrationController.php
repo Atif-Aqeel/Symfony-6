@@ -18,9 +18,10 @@ class RegistrationController extends AbstractController
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
+
         $form->handleRequest($request);
 
-        if ($user->getEmail() == "admin11@gmail.com") {
+        if ($user->getEmail() === "admin11@gmail.com") {
             return $this->redirectToRoute("admin_dashboard");
         }
 
